@@ -1,0 +1,44 @@
+version: "3.8"
+name: popug-task-tracker
+services:
+
+  mongodb:
+    image: aashreys/mongo-auth:latest
+    restart: always
+    ports:
+      - 42017:27017
+    environment:
+      AUTH: yes
+      MONGODB_ADMIN_USER: popug-admin
+      MONGODB_ADMIN_PASS: kmge4CxsdWEZ2g45
+      MONGODB_APPLICATION_DATABASE: popug
+      MONGODB_APPLICATION_USER: popug
+      MONGODB_APPLICATION_PASS: yEjGKPpfFLza8Zk3
+    volumes:
+      - mongo-data:/data/db
+
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - 42181:2181
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: yes
+    volumes:
+      - zookeeper-data:/bitnami
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.2
+    ports:
+      - 42092:9092
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka-data:/bitnami
+
+volumes:
+  mongo-data:
+  kafka-data:
+  zookeeper-data:
